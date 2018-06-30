@@ -94,7 +94,7 @@ clean:
 		$(CD) ..; \
 	done );
 	@$(RM) $(RMFLAGS) *.o *~ core
-	@$(CD) $(FE)/../EXAMPLES;  $(MAKE) wipe;
+	rm $(libpath)/*.a
 
 wipe: 
 	@( \

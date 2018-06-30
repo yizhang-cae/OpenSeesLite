@@ -20,10 +20,10 @@
 # Specify the location and name of the OpenSees interpreter program
 # that will be created (if this all works!)
 
-minjie = /scratch/downloads/OpenSees
-libpath = /scratch/downloads/OpenSees/lib
+opensees_dir = /Users/yiz/Work/OpenSeesLite
+libpath = $(opensees_dir)/lib
 
-OpenSees_PROGRAM = /scratch/downloads/OpenSees/bin/OpenSees
+OpenSees_PROGRAM = $(opensees_dir)/bin/OpenSees
 PROGRAMMING_MODE = SEQUENTIAL
 
 ifeq ($(PROGRAMMING_MODE), PARALLEL_INTERPRETERS)
@@ -50,7 +50,8 @@ DEBUG_MODE = NO_DEBUG
 RELIABILITY = YES_RELIABILITY
 RELIABILITY_FLAG = -D_RELIABILITY
 
-PFEM_FLAG = -D_PFEM -fopenmp
+# PFEM_FLAG = -D_PFEM -fopenmp
+PFEM_FLAG =
 
 ifeq ($(PROGRAMMING_MODE), SEQUENTIAL)
     MUMPS_FLAG =
@@ -76,29 +77,29 @@ endif
 # any of the libraries already leave the directory location blank AND
 # remove the directory from DIRS.
 
-FE		= $(minjie)/SRC
+FE		= $(opensees_dir)/SRC
 
-BLASdir      = $(minjie)/OTHER/BLAS
-CBLASdir     = $(minjie)/OTHER/CBLAS
-LAPACKdir    = $(minjie)/OTHER/LAPACK
-SUPERLUdir   = $(minjie)/OTHER/SuperLU_5.1.1/SRC
-ARPACKdir    = $(minjie)/OTHER/ARPACK
-UMFPACKdir   = $(minjie)/OTHER/UMFPACK
-ITPACKdir   = $(minjie)/OTHER/ITPACK
-AMDdir       = $(minjie)/OTHER/AMD
-CSPARSEdir   = $(minjie)/OTHER/CSPARSE
-#TRIANGLEdir   = $(minjie)/OTHER/Triangle
-#TETGENdir   = $(minjie)/OTHER/tetgen1.5.0
-SRCdir       = $(minjie)/SRC
+BLASdir      = $(opensees_dir)/OTHER/BLAS
+CBLASdir     = $(opensees_dir)/OTHER/CBLAS
+LAPACKdir    = $(opensees_dir)/OTHER/LAPACK
+SUPERLUdir   = $(opensees_dir)/OTHER/SuperLU_5.1.1/SRC
+ARPACKdir    = $(opensees_dir)/OTHER/ARPACK
+UMFPACKdir   = $(opensees_dir)/OTHER/UMFPACK
+ITPACKdir   = $(opensees_dir)/OTHER/ITPACK
+AMDdir       = $(opensees_dir)/OTHER/AMD
+CSPARSEdir   = $(opensees_dir)/OTHER/CSPARSE
+#TRIANGLEdir   = $(opensees_dir)/OTHER/Triangle
+#TETGENdir   = $(opensees_dir)/OTHER/tetgen1.5.0
+SRCdir       = $(opensees_dir)/SRC
 
 ifeq ($(PROGRAMMING_MODE), SEQUENTIAL)
     SUPERLU_DISTdir =
     SUPERLU_INCLUDES =
     METISdir       =
 else
-    SUPERLU_DISTdir = $(minjie)/OTHER/SuperLU_DIST_4.3/SRC
+    SUPERLU_DISTdir = $(opensees_dir)/OTHER/SuperLU_DIST_4.3/SRC
     SUPERLU_INCLUDES = -I$(SUPERLU_DISTdir)
-    METISdir       = $(minjie)/OTHER/METIS
+    METISdir       = $(opensees_dir)/OTHER/METIS
 endif
 
 DIRS    = $(BLASdir) $(CBLASdir) $(LAPACKdir) $(ITPACKdir) $(SUPERLUdir) $(ARPACKdir) $(UMFPACKdir) $(SRCdir) $(METISdir) $(AMDdir) $(CSPARSEdir) $(SUPERLU_DISTdir)
@@ -136,6 +137,10 @@ CSPARSE_LIBRARY = $(libpath)/libcsparse.a
 #TETGEN_LIBRARY = $(libpath)/libTetgen.a
 RELIABILITY_LIBRARY = $(libpath)/libReliability.a
 OPTIMIZATION_LIBRARY = $(libpath)/libOptimization.a
+GFORTRAN_LIBRARY = /usr/local/Cellar/gcc/7.3.0_1/lib/gcc/7/libgfortran.a
+OMP_LIBRARY = /usr/local/Cellar/gcc/7.3.0_1/lib/gcc/7/libgomp.dylib
+GCC_LIBRARY = /usr/local/Cellar/gcc/7.3.0_1/lib/gcc/7/gcc/x86_64-apple-darwin16.7.0/7.3.0/libgcc.a
+QUADMATH_LIBRARY = /usr/local/Cellar/gcc/7.3.0_1/lib/gcc/7/libquadmath.a
 
 ifeq ($(PROGRAMMING_MODE), SEQUENTIAL)
     DISTRIBUTED_SUPERLU_LIBRARY =
@@ -184,9 +189,9 @@ MPI_BIN =
 MPI_INCLUDE =
 MPI_LIB =
 
-CC++	= g++
-CC      = gcc
-FC	= gfortran
+CC++	= c++
+CC      = cc
+FC	= /usr/local/Cellar/gcc/7.3.0_1/bin/gfortran
 #NVCC    = /usr/local/apps/cuda/cuda-7.5.18/bin/nvcc
 
 else
@@ -327,9 +332,13 @@ OTHER_PARA_LIB =  -lparmetis -lmetis -lmpi -lmpicxx -lmpifort
 
 endif
 
-MACHINE_LINKLIBS  =  -L/usr/lib64 -L/lib64
+MACHINE_LINKLIBS  =  -L/usr/local/Cellar/gcc/7.3.0_1/lib/gcc/7/gcc/x86_64-apple-darwin16.7.0/7.3.0
 
-MACHINE_NUMERICAL_LIBS  = $(RELIABILITY_LIBRARY) $(OPTIMIZATION_LIBRARY) -lm -lgfortran \
+MACHINE_NUMERICAL_LIBS  = $(RELIABILITY_LIBRARY) $(OPTIMIZATION_LIBRARY) -lm \
+		$(QUADMATH_LIBRARY) \
+		$(GCC_LIBRARY) \
+		$(OMP_LIBRARY) \
+		$(GFORTRAN_LIBRARY) \
 		$(ARPACK_LIBRARY) \
 		$(SUPERLU_LIBRARY) \
 		$(UMFPACK_LIBRARY) \
@@ -342,7 +351,7 @@ MACHINE_NUMERICAL_LIBS  = $(RELIABILITY_LIBRARY) $(OPTIMIZATION_LIBRARY) -lm -lg
 		$(TETGEN_LIBRARY) \
 		$(LAPACK_LIBRARY) $(BLAS_LIBRARY) $(CBLAS_LIBRARY) \
 		$(GRAPHIC_LIBRARY) \
-		-ldl -lpng -lssl -lgomp
+		-ldl -lpng -lssl
 		#-L/usr/local/apps/cuda/cuda-7.5.18/lib64 -lcusolver -lcudart -lcusparse
 
 MACHINE_SPECIFIC_LIBS =

@@ -189,8 +189,8 @@ MPI_BIN =
 MPI_INCLUDE =
 MPI_LIB =
 
-CC++	= c++
-CC      = c++
+CC++	= clang++
+CC      = clang
 FC	= /usr/local/Cellar/gcc/7.3.0_1/bin/gfortran
 #NVCC    = /usr/local/apps/cuda/cuda-7.5.18/bin/nvcc
 

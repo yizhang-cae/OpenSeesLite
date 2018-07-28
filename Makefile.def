@@ -21,7 +21,7 @@
 # that will be created (if this all works!)
 
 opensees_dir = /Users/yiz/Work/OpenSeesLite
-libpath = $(opensees_dir)/lib
+opensees_libpath = $(opensees_dir)/lib
 
 OpenSees_PROGRAM = $(opensees_dir)/bin/OpenSees
 PROGRAMMING_MODE = SEQUENTIAL
@@ -120,23 +120,23 @@ DIRS    = $(BLASdir) $(CBLASdir) $(LAPACKdir) $(ITPACKdir) $(SUPERLUdir) $(ARPAC
 # Note: For libraries that will be created (any in DIRS above)
 # make sure the directory exsists where you want the library to go!
 
-FE_LIBRARY      = $(libpath)/libOpenSees.a
-NDARRAY_LIBRARY = $(libpath)/libndarray.a # BJ_UCD jeremic@ucdavis.edu
-MATMOD_LIBRARY  = $(libpath)/libmatmod.a  # BJ_UCD jeremic@ucdavis.edu
-BJMISC_LIBRARY  = $(libpath)/libBJmisc.a  # BJ_UCD jeremic@ucdavis.edu
-LAPACK_LIBRARY  = $(libpath)/libLapack.a
-BLAS_LIBRARY    = $(libpath)/libBlas.a
-SUPERLU_LIBRARY = $(libpath)/libSuperLU.a
-CBLAS_LIBRARY   = $(libpath)/libCBlas.a
-ARPACK_LIBRARY  = $(libpath)/libArpack.a
-UMFPACK_LIBRARY = $(libpath)/libUmfpack.a
-ITPACK_LIBRARY = $(libpath)/libItpack.a
-AMD_LIBRARY     = $(libpath)/libAMD.a
-CSPARSE_LIBRARY = $(libpath)/libcsparse.a
-#TRIANGLE_LIBRARY = $(libpath)/libTriangle.a
-#TETGEN_LIBRARY = $(libpath)/libTetgen.a
-RELIABILITY_LIBRARY = $(libpath)/libReliability.a
-OPTIMIZATION_LIBRARY = $(libpath)/libOptimization.a
+FE_LIBRARY      = $(opensees_libpath)/libOpenSees.a
+NDARRAY_LIBRARY = $(opensees_libpath)/libndarray.a # BJ_UCD jeremic@ucdavis.edu
+MATMOD_LIBRARY  = $(opensees_libpath)/libmatmod.a  # BJ_UCD jeremic@ucdavis.edu
+BJMISC_LIBRARY  = $(opensees_libpath)/libBJmisc.a  # BJ_UCD jeremic@ucdavis.edu
+LAPACK_LIBRARY  = $(opensees_libpath)/libLapack.a
+BLAS_LIBRARY    = $(opensees_libpath)/libBlas.a
+SUPERLU_LIBRARY = $(opensees_libpath)/libSuperLU.a
+CBLAS_LIBRARY   = $(opensees_libpath)/libCBlas.a
+ARPACK_LIBRARY  = $(opensees_libpath)/libArpack.a
+UMFPACK_LIBRARY = $(opensees_libpath)/libUmfpack.a
+ITPACK_LIBRARY = $(opensees_libpath)/libItpack.a
+AMD_LIBRARY     = $(opensees_libpath)/libAMD.a
+CSPARSE_LIBRARY = $(opensees_libpath)/libcsparse.a
+#TRIANGLE_LIBRARY = $(opensees_libpath)/libTriangle.a
+#TETGEN_LIBRARY = $(opensees_libpath)/libTetgen.a
+RELIABILITY_LIBRARY = $(opensees_libpath)/libReliability.a
+OPTIMIZATION_LIBRARY = $(opensees_libpath)/libOptimization.a
 GFORTRAN_LIBRARY = /usr/local/Cellar/gcc/7.3.0_1/lib/gcc/7/libgfortran.a
 OMP_LIBRARY = /usr/local/Cellar/gcc/7.3.0_1/lib/gcc/7/libgomp.dylib
 GCC_LIBRARY = /usr/local/Cellar/gcc/7.3.0_1/lib/gcc/7/gcc/x86_64-apple-darwin16.7.0/7.3.0/libgcc.a
@@ -146,8 +146,8 @@ ifeq ($(PROGRAMMING_MODE), SEQUENTIAL)
     DISTRIBUTED_SUPERLU_LIBRARY =
     METIS_LIBRARY   =
 else
-    DISTRIBUTED_SUPERLU_LIBRARY = $(libpath)/libDistributedSuperLU.a
-    METIS_LIBRARY   = $(libpath)/libMetis.a
+    DISTRIBUTED_SUPERLU_LIBRARY = $(opensees_libpath)/libDistributedSuperLU.a
+    METIS_LIBRARY   = $(opensees_libpath)/libMetis.a
 endif
 
 TCL_LIBRARY = 
@@ -190,7 +190,7 @@ MPI_INCLUDE =
 MPI_LIB =
 
 CC++	= c++
-CC      = cc
+CC      = c++
 FC	= /usr/local/Cellar/gcc/7.3.0_1/bin/gfortran
 #NVCC    = /usr/local/apps/cuda/cuda-7.5.18/bin/nvcc
 
@@ -225,23 +225,17 @@ RANLIBFLAGS     =
 # modified as optimizaton currently causing problems with Steeln01 code
 ifeq ($(DEBUG_MODE), DEBUG)
 
-
-
-
-C++FLAGS         = -Wall -D_LINUX -D_UNIX  -D_TCL85 $(GRAPHIC_FLAG) $(RELIABILITY_FLAG) $(DEBUG_FLAG) $(PROGRAMMING_FLAG) -D_COROTATIONAL $(PFEM_FLAG) -g -pg $(MUMPS_FLAG) $(PETSC_FLAG) -fPIC
-
-
+opensees_C++FLAGS = -Wall -D_LINUX -D_UNIX  -D_TCL85 $(GRAPHIC_FLAG) $(RELIABILITY_FLAG) $(DEBUG_FLAG) $(PROGRAMMING_FLAG) -D_COROTATIONAL -g -pg $(MUMPS_FLAG) $(PETSC_FLAG) -fPIC
 CFLAGS          = -Wall -pg $(GRAPHIC_FLAG) $(RELIABILITY_FLAG) $(DEBUG_FLAG) $(PROGRAMMING_FLAG) $(PFEM_FLAG) -fPIC -std=c99
 FFLAGS          = -Wall -fPIC
 
 # Linker
 LINKER          = $(CC++)
-LINKFLAGS       = -g -pg
-
+# LINKFLAGS       = -g -pg
+LINKFLAGS       =
 
 else
-
-C++FLAGS         = -Wall -D_LINUX -D_UNIX -D_TCL85 $(GRAPHIC_FLAG) $(RELIABILITY_FLAG) $(DEBUG_FLAG) $(PROGRAMMING_FLAG) -O3 -ffloat-store -D_COROTATIONAL $(PFEM_FLAG) $(MUMPS_FLAG) $(PETSC_FLAG) -fPIC -pedantic -ansi
+opensees_C++FLAGS  = -Wall -D_LINUX -D_UNIX -D_TCL85 $(GRAPHIC_FLAG) $(RELIABILITY_FLAG) $(DEBUG_FLAG) $(PROGRAMMING_FLAG) -O3 -ffloat-store -D_COROTATIONAL $(PFEM_FLAG) $(MUMPS_FLAG) $(PETSC_FLAG) -fPIC
 CFLAGS          = -Wall -O2 $(PFEM_FLAG) -fPIC -ansi
 FFLAGS          = -Wall -O -fPIC
 
@@ -285,11 +279,11 @@ SHELL           = /bin/sh
 
 .cpp.o:
 	@$(ECHO) Making $@ from $<
-	$(CC++) $(C++FLAGS) $(INCLUDES) -c $(shell pwd)/$< -o $(shell pwd)/$@
+	$(CC++) $(opensees_C++FLAGS) $(opensees_INCLUDES) -c $(shell pwd)/$< -o $(shell pwd)/$@
 
 .C.o:
 	@$(ECHO) Making $@ from $<
-	$(CC++) $(C++FLAGS) $(INCLUDES) -c $(shell pwd)/$< -o $(shell pwd)/$@
+	$(CC++) $(opensees_C++FLAGS) $(opensees_INCLUDES) -c $(shell pwd)/$< -o $(shell pwd)/$@
 .c.o:
 	@$(ECHO) Making $@ from $<
 	$(CC) $(CFLAGS) -c $(shell pwd)/$< -o $(shell pwd)/$@
@@ -377,4 +371,4 @@ include $(FE)/Makefile.incl
 
 TCL_INCLUDES = -I/usr/include
 
-INCLUDES = $(TCL_INCLUDES) $(FE_INCLUDES) $(MACHINE_INCLUDES) $(SUPERLU_INCLUDES) $(MUMPS_INCLUDE) $(MPI_INCLUDE) $(PETSC_INCLUDE)
+opensees_INCLUDES = $(TCL_INCLUDES) $(FE_INCLUDES) $(MACHINE_INCLUDES) $(SUPERLU_INCLUDES) $(MUMPS_INCLUDE) $(MPI_INCLUDE) $(PETSC_INCLUDE)
